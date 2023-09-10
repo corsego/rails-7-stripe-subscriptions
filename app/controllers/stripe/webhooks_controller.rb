@@ -49,6 +49,15 @@ class Stripe::WebhooksController < ApplicationController
         subscription_status: subscription.status,
         subscription_ends_at: Time.at(subscription.current_period_end).to_datetime
       )
+    when 'checkout.session.completed'
+      session = event.data.object
+      # handle one time payment
+      if session.mode == 'payment' && session.payment_status == 'paid'
+        user = User.find_by(stripe_customer_id: session.customer)
+        session_with_line_items = Stripe::Checkout::Session.retrieve({ id: session.id, expand: ['line_items'] })
+        plan = session_with_line_items.line_items.data.first.price.lookup_key # "lifetime"
+        user.update(plan:)
+      end
     end
     
     render json: { message: 'success' }

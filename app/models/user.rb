@@ -9,6 +9,7 @@ class User < ApplicationRecord
   end
 
   def active?
+    return true if plan == 'lifetime'
     return false unless subscription_ends_at.present?
 
     subscription_ends_at > Time.zone.now

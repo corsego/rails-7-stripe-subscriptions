@@ -1,13 +1,14 @@
 class Stripe::CheckoutController < ApplicationController
   def pricing
-    lookup_keys = %w[monthly yearly]
+    lookup_keys = %w[monthly yearly lifetime]
     @prices = Stripe::Price.list(lookup_keys: lookup_keys, active: true, expand: ['data.product']).data.sort_by(&:unit_amount)
   end
 
   def checkout
+    price = Stripe::Price.retrieve(params[:price_id])
     session = Stripe::Checkout::Session.create({
       customer: current_user.stripe_customer_id,
-      mode: 'subscription',
+      mode: mode(price),
       line_items: [{
         quantity: 1,
         price: params[:price_id]
@@ -26,5 +27,16 @@ class Stripe::CheckoutController < ApplicationController
   def cancel
     flash[:alert] = "failure"
     redirect_to pricing_path
+  end
+
+  private
+
+  MODES = {
+    'recurring' => 'subscription',
+    'one_time' => 'payment'
+  }.freeze
+
+  def mode(price)
+    MODES[price.type]
   end
 end
