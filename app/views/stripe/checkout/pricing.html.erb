@@ -4,7 +4,8 @@
     <%= price.product.name %>
     <%= price.currency %>
     <%= price.unit_amount/100 %>
-    <%= price.recurring.interval %>
+    <%= price&.recurring&.interval %>
+    <%= price.type %>
     <%= button_to 'Subscribe', stripe_checkout_path(price_id: price.id), data: {turbo: 'false'} %>
   </div>
 <% end %>

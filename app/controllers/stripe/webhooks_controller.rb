@@ -49,8 +49,21 @@ class Stripe::WebhooksController < ApplicationController
         subscription_status: subscription.status,
         subscription_ends_at: Time.at(subscription.current_period_end).to_datetime
       )
+    when 'checkout.session.completed'
+      session = event.data.object
+      if session.payment_status == 'paid' && session.mode == 'payment'
+        user = User.find_by(stripe_customer_id: session.customer)
+        session_with_expand = Stripe::Checkout::Session.retrieve({ id: session.id, expand: ['line_items'] })
+        session_with_expand.line_items.data.each do |line_item|
+          user.update(
+            plan: line_item.price.lookup_key.presence || line_item.price.nickname.presence,
+            # subscription_status: 'active',
+            # current_period_end: Time.zone.now + 100.years
+          )
+        end
+      end
     end
-    
+
     render json: { message: 'success' }
   end
 end
