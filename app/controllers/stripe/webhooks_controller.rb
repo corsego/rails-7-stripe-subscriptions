@@ -6,7 +6,7 @@ class Stripe::WebhooksController < ApplicationController
     # If you are testing with the CLI, find the secret by running 'stripe listen'
     # If you are using an endpoint defined with the API or dashboard, look in your webhook settings
     # at https://dashboard.stripe.com/webhooks
-    webhook_secret = 'whsec_707f7af37b1c5f35c2084facce040f48f0ac22ece9c9546af85358678f36f5e6'
+    webhook_secret = 'whsec_your_webhook_secret_here'
     payload = request.body.read
     if !webhook_secret.empty?
       # Retrieve the event by verifying the signature using the raw body and secret if webhook signing is configured.

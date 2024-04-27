@@ -1,0 +1,7 @@
+<%= javascript_include_tag "https://js.stripe.com/v3/" %>
+
+<%= tag.div data: {
+  controller: "stripe--embedded-checkout",
+  stripe__embedded_checkout_public_key_value: 'pk_test_your_stripe_public_key',
+  stripe__embedded_checkout_client_secret_value: @session.client_secret
+} %>

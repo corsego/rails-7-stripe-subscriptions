@@ -6,6 +6,7 @@
     <%= price.unit_amount/100 %>
     <%= price.recurring&.interval %>
     <%= price.type %>
-    <%= button_to 'Subscribe', stripe_checkout_path(price_id: price.id), data: {turbo: 'false'} %>
+    <%= button_to 'Subscribe (full page)', stripe_checkout_path(price_id: price.id), data: {turbo: 'false'} %>
+    <%= link_to 'Subscribe (embedded)', stripe_checkout_new_path(price_id: price.id) %>
   </div>
 <% end %>
